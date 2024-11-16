@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini File Maestro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<div id="gemini-db-interaction">
+    <label for="user-input">Enter text or code:</label><br>
+    <textarea id="user-input"></textarea><br>
+    <button class="gemini-action-btn" data-action="generate-text" data-type="poem">Generate Poem</button>
+    <button class="gemini-action-btn" data-action="generate-text" data-type="code">Generate Code</button>
+    <button class="gemini-action-btn" data-action="generate-text" data-type="story">Generate Story</button>
+    <button class="gemini-action-btn" data-action="generate-text" data-type="song">Generate Song</button>
+
+
+    <br>
+    <select id="file-type">
+        <option value="txt">Text (.txt)</option>
+        <option value="py">Python (.py)</option>
+        <option value="cpp">C++ (.cpp)</option>
+        <option value="js">JavaScript (.js)</option>
+        <option value="html">HTML (.html)</option>
+        <option value="json">JSON (.json)</option>
+        </select>
+    <button id="save-to-db">Save to DB</button>
+
+    <button id="open-from-db">Open from DB</button> <input type="file" id="file-upload" style="display:none;">
+    <div id="api-results"></div>
+
+    <div id="db-items-container" style="display:none;">
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function() {
+        const geminiApiKey = "{{ gemini_api_key }}"; // Pass the API key from Flask
+    
+        function displayDbItems(items) {
+            let html = '<ul>';
+            items.forEach(item => {
+                html += `<li><span>${item.name} (${item.type})</span> - <a href="/download/${item.id}" class="download-link" download>Download</a> <button class="delete-item" data-id="${item.id}">Delete</button></li>`;
+            });
+            html += '</ul>';
+            $('#db-items-container').html(html);
+            $('#db-items-container').show();
+    
+              // Add delete item functionality after the items are displayed
+            $('.delete-item').click(function() {
+                const itemId = $(this).data('id');
+                deleteItemFromDb(itemId);
+    
+            });
+        }
+        // Add loading indicator
+        let loading = false;
+        const $loadingIndicator = $('<div id="loading-indicator">Loading...</div>');
+    
+        $('.gemini-action-btn').click(function() {
+            if (loading) return; // Prevent multiple clicks while loading
+            loading = true;
+            $('#api-results').append($loadingIndicator); // Show loading indicator  
+            success: function(data) {
+                // ... existing success logic
+                loading = false;
+                $loadingIndicator.remove(); // Hide loading indicator
+
+    error: function(error) {
+                // ... existing error logic
+                loading = false;
+                $loadingIndicator.remove(); // Hide loading indicator
+    
+    
+        });
+    
+        $('#save-to-db').click(function() {
+            if (loading) return;
+            loading = true;
+            $('#api-results').append($loadingIndicator); // Show loading
+              // ... (Existing save logic)
+            complete: function() {
+                // After save is complete (success or failure)
+                $.get('/get_db_items', function(data) {
+                    if (data.items) {
+                        displayDbItems(data.items);
+                    } else {
+                        $('#api-results').text("No items found in the database.");
+                    }
+                });
+                loading = false;
+                 $loadingIndicator.remove(); // Hide loading
+              // Clear the API results after saving
+               $('#api-results').text(""); // Clear the API results display
+    
+    
+        });
+    
+        $('#open-from-db').click(function() {
+            if (loading) return;
+            loading = true;
+            $('#db-items-container').append($loadingIndicator);
+            $.get('/get_db_items', function(data) {
+            if (data.items) {
+                displayDbItems(data.items);
+            } else {
+                $('#api-results').text("No items found in the database.");
+            }
+            loading = false;
+               $loadingIndicator.remove(); // Hide loading indicator
+                }
+            });
+        });
+    
+    
+    
+    
+        // Enhanced Open from DB functionality
+        $(document).on('click', '.download-link', function(event) {
+            if (loading) return; // Prevent multiple clicks while loading
+            loading = true;
+            event.preventDefault(); // Prevent default link behavior
+            const fileId = $(this).closest('li').find('.delete-item').data('id');
+            currentFileId = fileId; // Store current file id
+    
+            $.ajax({
+                url: `/open_file/${fileId}`,
+                type: 'GET',
+                success: function(data) {
+                    $('#user-input').val(data.content);
+                },
+                error: function(error) {
+                    $('#api-results').text("Error opening file from database.");
+                }
+    
+            });
+    
+        });
+    
+    
+         // Delete Item Function
+        function deleteItemFromDb(itemId) {
+            if (loading) return;
+            loading = true;
+                $.ajax({
+                    url: `/delete_db_item/${itemId}`, // New route for deleting
+                    type: 'DELETE', // Use DELETE method
+                    success: function(data) {
+                       $('#api-results').text(data.message);  // Display success message
+    
+                         // Refresh the displayed items
+                        $.get('/get_db_items', function(data) {
+                    if (data.items) {
+                       displayDbItems(data.items); // Refresh after successful delete
+                    } else {
+                        $('#api-results').text("No items found in the database.");
+                    }
+                });
+    
+                    },
+                    error: function(error) {
+                        console.error("Delete Error:", error);
+                        $('#api-results').text("Error deleting item from database.");
+                    }
+    
+                });
+            }
+    
+    
+    
+    
+    
+    
+        $('#open-from-db').click(function() {
+            $.get('/get_db_items', function(data) {
+                if (data.items) {
+                    displayDbItems(data.items);
+                } else {
+                    $('#api-results').text("No items found in the database.");
+                }
+            });
+        });
+
+$(document).ready(function() {
+
+    function displayDbItems(items) {
+        let html = '<ul>';
+        items.forEach(item => {
+            html += `<li>${item.name} (${item.type}) - <a href="/download/${item.id}" class="download-link" download>Download</a></li>`;
+
+        });
+        html += '</ul>';
+        $('#db-items-container').html(html);
+        $('#db-items-container').show();
+    }
+
+
+    $(document).ready(function() {
+
+        $('#execute-query').click(function() {
+            let naturalLanguageQuery = $('#natural-language-query').val();
+
+            $.ajax({
+                url: '/gemini_db_interact',  // Your Flask route
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ query: naturalLanguageQuery }),
+                success: function(data) {
+                    // Display results or update the UI as needed
+                    $('#query-results').text(JSON.stringify(data, null, 2)); 
+                },
+                error: function(error) {
+                    console.error("Error:", error);
+                    $('#query-results').text("Error: " + error.responseText);
+                }
+
+    $('#save-to-db').click(function() {
+        let userInput = $('#user-input').val();
+        let fileType = $('#file-type').val();
+
+        $.ajax({
+            url: '/save_to_db',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ content: userInput, file_type: fileType }),
+            success: function(data) {
+                $('#api-results').text(data.message); // Or display a success message
+            },
+            error: function(error) {
+                console.error("Save Error:", error);
+                $('#api-results').text("Error saving to database.");
+            }
+
+        });
+    });
+
+    $('#open-from-db').click(function() {
+        $.get('/get_db_items', function(data) {
+            if (data.items) {
+
+                displayDbItems(data.items); // Display items with download links
+            } else {
+                $('#api-results').text("No items found in the database.");
+            }
+        });
+    });
+
+    $('#file-upload').change(function() {  // Handle file selection
+
+        let file = this.files[0];
+        let reader = new FileReader();
+
+
+        reader.onload = function(e) {
+            $('#user-input').val(e.target.result);  // Load file content into textarea
+
+        };
+        reader.readAsText(file);
+    });
+
+
+
+    $('#open-file').click(function(){
+        $('#file-upload').click()
+
+
+    })
+
+});
+
+</script>
+</body>
+</html>

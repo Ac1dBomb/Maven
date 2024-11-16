@@ -106,7 +106,68 @@ def render_markdown(content):
     return linkified_content
 
 
+@app.route('/get_db_items')
+@login_required
+def get_db_items():
+    files = File.query.filter_by(user_id=current_user.id).all()
+    items = [{'id': file.id, 'name': file.name, 'type': file.type} for file in files]
+    return jsonify({'items': items})
 
+
+
+# Existing download route
+@app.route('/download/<int:file_id>')
+@login_required
+def download(file_id):
+    file = File.query.filter_by(id=file_id, user_id=current_user.id).first_or_404()
+    return send_from_directory(app.config['UPLOAD_FOLDER'], file.name, as_attachment=True)
+@app.route('/gemini_api/creative_generation', methods=['POST'])
+@login_required
+def gemini_creative_generation():
+    prompt = request.json.get('prompt')
+    type = request.json.get('type', 'text')  # Get the generation type or default to text
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {GEMINI_API_KEY}"  # Pass API Key
+    }
+    creative_types = {  # Define creative types and prompts
+        "poem": f"Write a poem based on this text:\n{prompt}",
+        "code": f"Generate Python code that does the following:\n{prompt}",
+        "story": f"Write a short story based on:\n{prompt}",
+        "song": f"Compose a short song based on this description:\n{prompt}",
+        "text": f"{prompt}" # Add a default generation, if no specific type is given
+    }
+
+    if type not in creative_types:
+        return jsonify({"error": "Invalid creative type"}), 400
+
+    request_prompt = creative_types.get(type) or prompt # If not found in list, fallback to text
+
+
+    data = {"prompt": request_prompt}  # Gemini API request data
+    api_endpoint = f"{gemini_api_url}/creative_generation" # Correct API endpoint
+
+
+    try:
+
+        response = requests.post(api_endpoint, headers=headers, json=data)
+        response.raise_for_status()
+        generated_text = response.json().get("response", "") # Extract the generated text/code
+
+        return jsonify({"response": generated_text}), 200
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/open_file/<int:file_id>')
+@login_required
+def open_file(file_id):
+    file = File.query.filter_by(id=file_id, user_id=current_user.id).first_or_404()
+    try:
+        content = file.content.decode('utf-8')
+        return jsonify({'content': content})
+    except UnicodeDecodeError:  # Handle decoding errors
+        return jsonify({'error': 'File decoding error'}), 500
 # Routes
 @app.route('/')
 @login_required  # Removed unnecessary redirect, protected route directly
@@ -206,17 +267,15 @@ def upload():
     return render_template('upload.html')  # Provide the upload.html template
 
 
-@app.route('/download/<int:file_id>')
+@app.route('/open_file/<int:file_id>')
 @login_required
-def download(file_id):
+def open_file(file_id):
     file = File.query.filter_by(id=file_id, user_id=current_user.id).first_or_404()
-    mimetype = mimetypes.guess_type(file.name)[0] or "application/octet-stream"  # Securely determine MIME type
-
-    return Response(file.content, mimetype=mimetype, headers={
-        'Content-Disposition': f'attachment; filename={file.name}',  # Secure filename handling
-        'Content-Length': len(file.content)
-    })
-# ... (register, login, logout, upload, download routes)
+    try:
+        content = file.content.decode('utf-8')
+        return jsonify({'content': content})
+    except UnicodeDecodeError:  # Handle decoding errors
+        return jsonify({'error': 'File decoding error'}), 500
 
 
 @app.route('/edit/<int:file_id>', methods=['GET', 'POST'])
@@ -570,22 +629,58 @@ def handle_file_edit(data):
         db.session.commit()
         emit('update', {'content': new_content, 'fileId': file_id}, room=file_id)
 
-{% for file in files %}
-<tr>
-    <td>{{ file.name }}</td>
-    <td>{{ file.size }}</td>  {# Assuming you have a file.size attribute #}
-    <td>{{ file.modified }}</td> {# Assuming you have a file.modified attribute #}
-    <td>
-        <button class="btn btn-primary sentiment-btn" data-file-id="{{ file.id }}">Sentiment</button>
-        <button class="btn btn-secondary grammar-btn" data-file-id="{{ file.id }}">Grammar</button>
+@app.route('/save_to_db', methods=['POST'])
+@login_required
+def save_to_db():
+    content = request.json.get('content')
+    file_type = request.json.get('file_type')  # Get selected file type
 
-        <button class="btn btn-info summarization-btn" data-file-id="{{ file.id }}">Summarization</button>
-        <button class="btn btn-warning ner-btn" data-file-id="{{ file.id }}">NER</button>
 
-        <button class="btn btn-dark creative-generation-btn" data-file-id="{{ file.id }}" data-type="poem">Poem</button>
-        <button class="btn btn-dark creative-generation-btn" data-file-id="{{ file.id }}" data-type="code">Code</button>
+    # Sanitize and validate content here (VERY IMPORTANT!)
+    sanitized_content = bleach.clean(content) # or a more specific sanitization method
+    if not file_type:
+        return jsonify({"error": "File type is required"}), 400
 
-        </button>
-    </td>
-</tr>
-{% endfor %}
+    # ... (Gemini API calls if needed - e.g., if you want to process the text before saving)
+
+    new_file = File(name=f"gemini_creation.{file_type}", content=sanitized_content, user_id=current_user.id, type=file_type)
+    db.session.add(new_file)
+    db.session.commit()
+    return jsonify({"message": "Saved to database!"})
+@app.route('/save_to_db', methods=['POST'])
+@login_required
+def save_to_db():
+    content = request.json.get('content')
+    file_type = request.json.get('file_type')
+    filename = f"gemini_generated.{file_type}" # Construct filename with extension
+
+    # Sanitize filename
+    sanitized_filename = sanitize_filename(filename)
+    new_file = File(name=sanitized_filename, content=content.encode('utf-8'), user_id=current_user.id)
+    db.session.add(new_file)
+    db.session.commit()
+    return jsonify({'message': 'Saved to database!'})
+
+
+
+@app.route('/get_db_items')
+@login_required
+def get_db_items():
+    files = File.query.filter_by(user_id=current_user.id).all()
+    items = [{'name': f.name, 'type': f.name.rsplit('.', 1)[1], 'id': f.id} for f in files]
+    return jsonify({'items': items})
+
+
+@app.route('/delete_db_item/<int:item_id>', methods=['DELETE'])  # New route
+@login_required
+def delete_db_item(item_id):
+    item = File.query.filter_by(id=item_id, user_id=current_user.id).first_or_404()
+    db.session.delete(item)
+    db.session.commit()
+    return jsonify({'message': 'Item deleted from database!'})
+
+
+
+
+
+

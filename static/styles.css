@@ -44,6 +44,10 @@ table {
 }
 
 /* End of CSS Reset */
+/* style.css */
+
+/* Import normalize.css for cross-browser consistency */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css');
 :root {
     --primary-color: #007bff;
     --secondary-color: #6c757d;
@@ -54,7 +58,14 @@ table {
     --neon-color: #00ffff;  /* Neon color */
     --glass-opacity: 0.2;
     --border-radius: 5px;
-    --max-width: 1200px; /* Define max-width as a variable */
+    --max-width: 1200px;
+    --spacing-small: 0.5rem;
+    --spacing-medium: 1rem;
+    --spacing-large: 2rem;
+    /* Font sizes using rem */
+    --font-size-base: 1rem; 
+    --font-size-large: 1.25rem;
+    --font-size-small: 0.875rem;
 }
 
 body {
@@ -224,19 +235,30 @@ pre code {
 }
 
 
-/* Buttons */
-button, input[type="submit"] {
+
+/* Button Component */
+.button {
     background-color: var(--primary-color);
     color: var(--text-color);
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-radius: var(--border-radius);
     cursor: pointer;
-    font-weight: 600; /* Slightly bolder button text */
-    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
-    box-shadow: 0 2px 5px var(--shadow-color); /* Subtle shadow */
-
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    text-decoration: none; /* Remove underline from button links */
+    display: inline-block; /* Make buttons inline-block elements */
 }
+
+.button:hover {
+    background-color: darken(var(--primary-color), 10%);
+}
+
+.button--secondary {  /* Example variant */
+    background-color: var(--secondary-color);
+}
+
 
 
 
@@ -256,47 +278,96 @@ input[type="submit"]:disabled {
     box-shadow: none;
 }
 
-/* Form Styles */
-form {
-
-    background: rgba(255, 255, 255, var(--glass-opacity)); /* Glassmorphism background */
-
-    border-radius: var(--border-radius);
-    padding: 30px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
+/* Form Component */
+.form-container {  /* Outer container for spacing and alignment */
+    display: flex;
+    justify-content: center; /* Center the form horizontally */
+    align-items: center;    /* Center the form vertically */
+    min-height: calc(100vh - 2 * var(--spacing-large)); /* Fill available height, minus padding  */
+    padding: var(--spacing-large);
 
 }
 
+.form {
+    background: rgba(255, 255, 255, 0.1);  /* Subtle background or glassmorphism */
+    border-radius: var(--border-radius);
+    padding: var(--spacing-medium);
+    box-shadow: 0 4px 15px var(--shadow-color);
+    max-width: 500px;  /* Set a reasonable max-width */
+    width: 100%;  /* Occupy full width within container */
+}
 
-label {
 
-    display: block;
-    margin-bottom: 8px;
-    color: var(--secondary-color); /* Use secondary color for labels */
+.form-group { /* Group labels and inputs */
+    margin-bottom: var(--spacing-medium);
+}
+
+.form label {
+    display: block;  /* Labels on their own line */
+    margin-bottom: var(--spacing-small);
+    color: var(--secondary-color);
     font-weight: 600;
+}
+
+.form input[type="text"],
+.form input[type="password"],
+.form input[type="email"],
+.form textarea,
+.form select {
+    width: calc(100% - 2 * var(--spacing-small));  /* Account for padding */
+    padding: var(--spacing-small);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--border-radius);
+    background-color: rgba(0, 0, 0, 0.1);
+    color: var(--text-color);
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    font-size: var(--font-size-base); /* Consistent font size */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Add smooth transitions */
+
 
 }
 
 
 
+.form input[type="text"]:focus,
+.form input[type="password"]:focus,
+.form input[type="email"]:focus,
+.form textarea:focus,
 
-input[type="text"],
-input[type="password"],
-input[type="email"],
-textarea,
-select {
-    width: calc(100% - 16px); /* Adjust for padding */
-    padding: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border */
-    border-radius: var(--border-radius);
-    background-color: rgba(0, 0, 0, 0.1); /* Slightly darkened background for inputs */
+.form select:focus {  /* Focus styles */
+
+    outline: none; /* Remove default outline */
+    border-color: var(--primary-color); /* Change border color */
+
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle glow or shadow */
+}
+
+.form input::placeholder, /* Placeholder text styles */
+.form textarea::placeholder {
+    color: rgba(var(--text-color-rgb), 0.6);
+}
 
 
-    color: var(--text-color);
-    box-sizing: border-box;
-    margin-bottom: 15px;
+
+.form-group--error input, /* Style inputs with errors */
+.form-group--error textarea
+.form-group--error select {
+    border-color: var(--error-color); /* E.g., red */
+
+}
+
+
+.form .error-message { /* Display error messages */
+    color: var(--error-color);
+    font-size: var(--font-size-small);
+    margin-top: var(--spacing-small);
+}
+
+.form button[type="submit"] {
+    /* ... button styles ... */
+    width: 100%; /* Make submit button full width */
+    padding: var(--spacing-small) var(--spacing-medium);
+
 
 }
 
@@ -385,25 +456,63 @@ select {
     /* Consider removing text-decoration: underline; here */
 
 }
-/* Tables (if used) */
-table {
 
+/* Table Component */
+.table-container { /* Wrapper for responsiveness */
+    overflow-x: auto; /* Horizontal scrolling if table is too wide */
+    margin-bottom: var(--spacing-large); /* Spacing below the table */
+}
+
+.table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    border-spacing: 0; /* Reset default spacing */
+    font-size: var(--font-size-base); /* Consistent font size */
 }
 
-th, td {
 
-    padding: 8px;
-    border: 1px solid #dee2e6; /* Use a light border */
-    text-align: left; /* Left-align table content by default */
+.table th, .table td {
+    padding: var(--spacing-small) var(--spacing-medium); /* Consistent padding */
+    border: 1px solid var(--secondary-color); /* Use secondary color for borders */
+    text-align: left; /* Default text alignment */
+    vertical-align: middle; /* Vertically center cell content */
+}
+
+.table th {
+    background-color: var(--secondary-color); /* Darker header background */
+    color: var(--text-color); /* Light text color for contrast */
+    font-weight: 600; /* Bold header text */
+}
+
+
+
+/* Optional: Add zebra striping */
+.table tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05); /* Subtle background */
+}
+
+
+
+/* Optional: Hover effect on rows */
+.table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* More pronounced hover effect */
 
 }
 
-th {
+/* Optional: Responsive table for smaller screens*/
+@media (max-width: 768px) {
+    .table-container {
+        font-size: var(--font-size-small); /* Slightly reduce font size */
 
-    background-color: #f8f8f8; /* Light header background */
+    }
+
+    .table th, .table td {
+
+        padding: var(--spacing-small); /* Reduce padding */
+
+    }
+
+
 
 }
 
