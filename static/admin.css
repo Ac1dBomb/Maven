@@ -1,0 +1,280 @@
+/* admin.css */
+
+/* Import normalize.css */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css');
+
+
+/* Variables (Use the same variables as styles.css where appropriate, 
+                but prefix with --admin to avoid conflicts) */
+:root {
+    --admin-primary-color: var(--primary-color); /* Inherit from styles.css */
+
+    --admin-secondary-color: var(--secondary-color);
+    --admin-background-color: var(--background-color);
+    --admin-text-color: var(--text-color);
+    --admin-error-color: #dc2626;
+    --admin-success-color: #16a34a;
+    --admin-border-radius: var(--border-radius);
+    --admin-shadow-color: var(--shadow-color);
+    --admin-spacing-small: var(--spacing-small);
+    --admin-spacing-medium: var(--spacing-medium);
+    --admin-spacing-large: var(--spacing-large);
+    --admin-font-size-base: var(--font-size-base);
+    --admin-font-size-small: var(--font-size-small);
+    --admin-font-size-large: var(--font-size-large);
+
+    /* Dev settings specific colors (high contrast for visibility) */
+
+    --dev-settings-background: #272822; /* Dark background */
+    --dev-settings-text: #f8f8f2; /* Very light text */
+
+    --dev-settings-accent: #f92672; /* Bright accent color (e.g., for keywords) */
+    --dev-settings-comment: #75715e; /* Muted green for comments*/
+
+
+
+}
+
+
+/* Base Admin Styles */
+body.admin-page { /* Or use a more specific container selector if needed */
+    background-color: var(--admin-background-color);
+    color: var(--admin-text-color);
+    font-family: 'Inter', sans-serif; /* Example: A modern, clean font */
+    font-size: var(--admin-font-size-base);
+}
+
+
+
+
+/* Admin Layout (Grid-based) */
+.admin-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);  /* Single column by default */
+    gap: var(--admin-spacing-large);  /* Spacing between grid items */
+    padding: var(--admin-spacing-large);
+}
+
+@media (min-width: 768px) { /* Adjust layout for larger screens */
+    .admin-content {
+        grid-template-columns: 250px 1fr; /* Sidebar and main content */
+
+    }
+}
+
+
+/* Admin Sidebar */
+.admin-sidebar {
+    background-color: var(--admin-primary-color);
+    color: white;
+    padding: var(--admin-spacing-medium);
+    border-radius: var(--admin-border-radius);
+}
+
+
+.admin-sidebar ul {  /* Sidebar navigation */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+}
+
+.admin-sidebar li {
+    margin-bottom: var(--admin-spacing-small);
+
+
+
+}
+
+
+.admin-sidebar a {
+    display: block; /* Make links fill list item width */
+
+    padding: var(--admin-spacing-small);
+    text-decoration: none;
+    color: white;
+    border-radius: var(--admin-border-radius);
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.admin-sidebar a:hover {
+
+    background-color: rgba(255, 255, 255, 0.2);
+
+}
+
+
+
+/* Admin Panels (Cards) */
+.admin-panel {  /* Style for individual settings sections */
+    background-color: white;
+    border-radius: var(--admin-border-radius);
+    padding: var(--admin-spacing-medium);
+    box-shadow: 0 2px 4px var(--admin-shadow-color);
+}
+
+
+
+
+.admin-panel h2 { /* Panel headings */
+    font-size: var(--admin-font-size-large);
+    color: var(--admin-primary-color);
+    margin-bottom: var(--admin-spacing-medium);
+}
+
+/* ... (styles for form elements, tables, buttons, etc. within admin panels) */
+
+
+
+/* Customizable Admin Settings */
+
+
+/* Theme Color Settings */
+input[type="color"].theme-color-picker { /* Color picker input */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 0;  /* Reset padding */
+    margin-right: var(--admin-spacing-small); /* Spacing between picker and label */
+}
+
+
+
+/* Dev Settings Section */
+#dev-settings .admin-panel { /* Use ID selector for dev settings panel */
+    background-color: var(--dev-settings-background); 
+    color: var(--dev-settings-text);
+
+}
+
+
+
+#dev-settings .admin-panel h2 { /* Dev settings panel heading */
+    color: var(--dev-settings-accent);
+
+}
+
+
+
+/* Code Editor Styling within Dev Settings */
+#dev-settings .code-editor {
+    background-color: #272822;  /* Example */
+    font-family: "Fira Code", monospace; /* Or any code font you prefer */
+    font-size: 1rem;
+    line-height: 1.4;
+
+}
+/* Syntax Highlighting (Example - Adjust as needed for your editor) */
+
+#dev-settings .keyword { color: var(--dev-settings-accent); }
+#dev-settings .comment { color: var(--dev-settings-comment); }
+#dev-settings .string { color: #e6db74; } /* Example */
+
+
+
+/* Advanced Settings Styles */
+
+/* Database Configuration */
+#database-settings .admin-panel { /* Specific styles for database settings panel */
+
+
+    /* ... (Add styles for database input fields, connection strings, etc.) */
+    /* Example: */
+    .db-input { /* Style database input fields */
+
+        width: 100%;
+        padding: var(--admin-spacing-small);
+        border: 1px solid var(--admin-secondary-color);
+
+    }
+
+
+
+
+}
+
+
+
+
+
+/* API Keys Section */
+
+#api-keys .admin-panel input {
+    /* Example: Special input styles for API keys */
+
+    font-family: monospace;
+    width: 100%;
+    padding: var(--admin-spacing-small);
+
+}
+
+
+/* Dev Settings Section (More Advanced Settings) */
+
+#dev-settings .admin-panel {
+    /* ... previous dev settings styles */
+}
+
+
+
+/* Feature Toggles (Example) */
+.feature-toggle {
+    display: flex;
+    align-items: center; /* Align toggle switch and label */
+
+}
+
+.feature-toggle label {
+    margin-left: var(--admin-spacing-small);  /* Space between switch and label */
+}
+
+.feature-toggle input[type="checkbox"] {
+    /* Customize toggle switch styles */
+    appearance: none;
+    -webkit-appearance: none;
+    /* Add more custom toggle styles, or use a CSS framework's toggle switch component */
+}
+
+
+
+/* ... (Styles for other advanced settings sections) */
+
+
+
+
+/* Responsive Adjustments */
+
+@media (max-width: 767px) { /* Example breakpoint - adjust as needed */
+    .admin-content {
+        grid-template-columns: 1fr; /* Single-column layout on smaller screens */
+
+        padding: var(--admin-spacing-medium); /* Reduce padding */
+
+
+    }
+
+    .admin-sidebar {
+        /* Consider hiding the sidebar on smaller screens if needed */
+        display: none;
+    }
+    .admin-panel {
+        padding: var(--admin-spacing-small);  /* Reduce padding for smaller cards */
+    }
+}
+
+
+@media (min-width: 1200px) { /* Example for larger screens */
+
+    .admin-content {
+        max-width: 1200px; /* Set a maximum container width */
+        margin: 0 auto; /* Center the container */
+
+    }
+
+
+}

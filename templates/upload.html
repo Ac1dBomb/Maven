@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload File - Gemini File Maestro</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">  
+    <link rel="stylesheet" href="{{ url_for('static', filename='upload.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Upload File</h1>
+        <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Choose File</label>
+                <input type="file" class="form-control-file" id="file" name="file">
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+
+        </form>
+
+
+        <div id="gemini-results"> </div>
+
+
+        <script>
+        // Add simple JavaScript for file selection feedback (optional)
+        const fileInput = document.getElementById('file');
+        const resultsDiv = document.getElementById('gemini-results');
+
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (file) {
+                resultsDiv.textContent = `Selected file: ${file.name}`; // Display selected filename
+            } else {
+                resultsDiv.textContent = ''; // Clear message if no file selected
+            }
+        });
+        </script>
+
+
+
+    </div>
+</body>
+</html>

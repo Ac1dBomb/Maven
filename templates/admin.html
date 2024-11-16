@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> </head> <body class="admin-page">
+    <div class="admin-content">
+        <aside class="admin-sidebar">
+            <ul>
+                <li><a href="#general-settings">General Settings</a></li>
+                <li><a href="#database-settings">Database</a></li>
+                <li><a href="#api-keys">API Keys</a></li>
+                <li><a href="#dev-settings">Dev Settings</a></li>
+                 </ul>
+        </aside>
+        <main>  <!-- Use main element for main content -->
+
+            <section id="general-settings" class="admin-panel">
+                <h2>General Settings</h2>
+
+                <form method="POST" action="{{ url_for('update_general_settings') }}">
+                    <div class="form-group">
+                        <label for="site_name">Site Name:</label>
+                        <input type="text" name="site_name" id="site_name" value="{{ site_name }}">
+                    </div>
+                    </form>
+            </section>
+
+
+
+            <section id="database-settings" class="admin-panel">
+                <h2>Database Settings</h2>
+                <form method="POST" action="{{ url_for('update_database_settings') }}">
+                    <div class="form-group">
+                        <label for="db_host">Database Host:</label>
+                        <input type="text" name="db_host" id="db_host" value="{{ db_host }}">
+                    </div>
+                </form>
+
+
+
+            </section>
+
+            <section id="api-keys" class="admin-panel">
+                <h2>API Keys</h2>
+                <form method="POST" action="{{ url_for('update_api_keys') }}">
+                    <div class="form-group">
+                        <label for="gemini_api_key">Gemini API Key:</label>
+                        <input type="password" name="gemini_api_key" id="gemini_api_key" value="{{ gemini_api_key }}">
+                    </div>
+
+                </form>
+            </section>
+
+            <section id="dev-settings" class="admin-panel">
+                <h2>Dev Settings</h2>
+
+                <h3>Code Editor Settings</h3>
+
+                <div class="form-group">
+
+                    <label for="theme">Editor Theme:</label>
+
+                    <select id="theme" name="theme">
+
+                <option value="dark">Dark</option>
+
+                <option value="light">Light</option>
+
+          </select>
+                </div>
+                <h3>Feature Flags</h3>
+
+
+
+                <div class="form-group">
+
+                    <label>Real-time Collaboration:</label>
+
+                    <div class="feature-toggle">  <!-- Use the feature-toggle class -->
+                        <input type="checkbox" id="real-time-collab" name="real_time_collab" {% if real_time_collab %}checked{% endif %}>
+                        <label for="real-time-collab">Enabled</label>
+                    </div>
+
+                    <button onclick="toggleFeature('real_time_collab')">Save</button> <span id="real-time-collab-message" class="success-message hidden">Setting saved successfully!</span>
+                </div>
+
+            </section>
+
+
+
+        </main>
+
+    </div>
+    <script>
+                // Function to call Gemini API (modified for real-time use)
+                async function callGeminiAPI(text, feature, elementId) {  // Add elementId parameter
+                    try {
+                        const response = await axios.post('/gemini_api/' + feature, { text: text });
+                        displayGeminiResults(response.data, elementId);  // Pass elementId here
+                    } catch (error) {
+                        console.error("Error calling Gemini API:", error);
+                        displayGeminiResults({ error: error.message }, elementId); // Display error
+                    }
+                }
+        
+        
+                // Function to display Gemini results (modified to target specific elements)
+                function displayGeminiResults(data, elementId) {
+                    const resultsDiv = document.getElementById(elementId);  // Get element by ID
+                    if (!resultsDiv) {
+                        console.error("Error: Element with ID '" + elementId + "' not found.");
+                        return; // or handle the error as needed
+                    }
+        
+                    if (data.error) {
+                        resultsDiv.innerHTML = `<p class="feedback-message error-message">${data.error}</p>`;
+        
+                    } else {
+                        resultsDiv.innerHTML = `<pre class="feedback-message success-message">${JSON.stringify(data, null, 2)}</pre>`;
+        
+                    }
+                }
+        
+        
+                // Example real-time Gemini API call for site name
+                document.getElementById('site_name').addEventListener('input', function() {
+                    const siteName = this.value;
+                    callGeminiAPI(siteName, 'site_name_analysis', 'site-name-feedback'); // Pass element ID
+                });
+
+        async function toggleFeature(featureName) {
+
+
+        const isEnabled = document.getElementById(featureName).checked;
+        try {
+
+            const response = await axios.post('/toggle_feature', {
+
+                feature: featureName,
+                enabled: isEnabled
+
+            });
+
+            if (response.status === 200) {
+
+                const messageSpan = document.getElementById(`${featureName}-message`);
+
+                messageSpan.classList.remove('hidden');
+
+
+                setTimeout(() => {
+
+                    messageSpan.classList.add('hidden');
+
+                }, 2000);
+
+            }
+
+        } catch (error) {
+
+            console.error(`Error toggling ${featureName}:`, error);
+
+
+        }
+
+        }
+
+    </script>
+
+</body>
+
+</html>

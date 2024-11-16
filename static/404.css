@@ -1,0 +1,81 @@
+/* styles.css (or 404.css if separate) */
+
+/* 404 Page Styles */
+
+.error-page { /* Container for the entire 404 page */
+    display: flex;
+    flex-direction: column; /* Align items vertically */
+    justify-content: center; /* Center vertically */
+    align-items: center; /* Center horizontally */
+    min-height: 100vh; /* Full viewport height */
+    text-align: center; /* Center text */
+    background-color: var(--background-color); /* Use your site's background color */
+    color: var(--text-color);
+    padding: var(--spacing-large);  /* Add padding */
+    font-family: inherit; /* Use your site's default font */
+}
+
+
+
+.error-page .neon-text {
+    font-size: 6rem; /* Large font size */
+    margin-bottom: var(--spacing-medium);
+
+    /* ... (Neon text styles from your existing CSS) */
+
+
+}
+
+.error-page .holographic-text {
+
+    font-size: 3rem; /* Smaller, but still large */
+    margin-bottom: var(--spacing-medium);
+
+    /* ... (Holographic text styles from your existing CSS) */
+
+
+}
+
+
+
+.error-page p {
+    font-size: 1.2rem; /* Larger paragraph text */
+
+    margin-bottom: var(--spacing-medium);
+}
+
+
+
+
+.error-page a {
+    color: var(--accent-color);
+    text-decoration: underline;
+
+}
+
+
+
+
+.error-image {
+
+    max-width: 500px; /* Or a percentage like 80% */
+    height: auto;
+    display: block; /* To remove any extra spacing */
+
+    margin: var(--spacing-medium) auto 0; /* Center the image horizontally */
+
+
+}
+
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {  /* Example breakpoint */
+
+    .error-page .neon-text { font-size: 4rem; }
+    .error-page .holographic-text { font-size: 2rem; }
+
+
+    .error-page p { font-size: 1rem; }
+    .error-image { max-width: 80%; }  /* Make image responsive */
+}

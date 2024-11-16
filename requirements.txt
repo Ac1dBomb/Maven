@@ -1,0 +1,81 @@
+#Core Flask Dependencies
+Flask==2.3.2
+Flask-Login==0.6.2
+Flask-WTF==1.1.1
+bcrypt==4.0.1
+Flask-SQLAlchemy==3.0.3
+Flask-Migrate==4.0.2
+python-dotenv==1.0.0
+Werkzeug==2.3.7
+
+
+#Database
+SQLAlchemy==2.0.19 
+psycopg2-binary
+
+#Security
+bcrypt==4.0.1 
+bleach==6.0.0
+
+#API and HTTP
+requests==2.31.0 
+requests-toolbelt # Advanced file uploads/streaming
+
+#Environment Variables
+python-dotenv==1.0.0
+
+#Markdown and Text Processing
+markdown==3.4.4 
+beautifulsoup4 # Web scraping, HTML parsing
+
+#Real-time Collaboration (Socket.IO)
+python-socketio
+eventlet==0.33.3 # Or gevent, or other async server. 
+
+#Timezone Handling
+pytz
+
+#File Handling and MIME Types
+filetype # Enhanced MIME type detection
+
+#Caching (Highly recommended for API efficiency)
+redis # Or latest; if using Redis Flask-Caching
+
+#Task Queue (For asynchronous tasks)
+celery # Message broker for Celery (or RabbitMQ, etc.)
+
+#Testing
+pytest # Or latest pytest-mock pytest-cov
+
+#Google Gemini API (Essential!)
+google-generativeai
+google-search-results
+#Google Cloud Libraries (Only if using other Google Cloud Services)
+google-cloud-storage # For Google Cloud Storage
+google-cloud-firestore # For Google Cloud Firestore
+SerpAPI
+#OpenAI Library (If using OpenAI API Compatibility features)
+openai
+
+
+
+#Optional APIs and Utilities (Add as needed) ---
+
+
+#Language Translation
+googletrans==4.0.0-rc1 # Unofficial Google Translate API
+# Development Tools (Optional) ---
+autopep8==2.0.2 # Or latest; code formatting 
+isort==5.12.0  # Or latest; import sorting
+
+#Debugging and Profiling
+pylint
+flake8
+Flask-DebugToolbar
+
+psycopg2-binary
+opencv-python
+scikit-image
+scikit-learn
+tensorflow
+torch

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download File - Gemini File Maestro</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='download.css') }}">
+</head>
+<body>
+
+
+    <div class="container">
+        <!-- File information (if needed) can be displayed here -->
+
+
+        <!-- The download link -->
+        <h2>Download File: {{ file.name }}</h2>
+        <a href="{{ url_for('download', file_id=file.id) }}" id="download-link" class="btn btn-primary" download="{{ file.name }}">Download</a>
+
+        <!-- Gemini API Interaction (example) -->
+        <div id="gemini-results"></div>
+        <button onclick="runGemini('sentiment')">Sentiment Analysis</button>
+
+<script>
+            function runGemini(feature) {
+                // Implement your Gemini API call here (similar to edit.html)
+                fetch(`/gemini_api/{{ file.id }}/${feature}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('gemini-results').textContent = JSON.stringify(data);
+                    });
+            }
+            function setupGeminiIntegration() {
+                const downloadLink = document.getElementById('download-link');
+                const resultsDiv = document.getElementById('gemini-results');
+                let fileContent; // Variable to store the downloaded file content
+            
+                downloadLink.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent default download behavior
+            
+                    fetch(this.href)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.blob(); // Get file content as a blob
+                        })
+                        .then(blob => blob.text())  // Read the blob as text
+                        .then(text => {
+                            fileContent = text;[[1](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AZnLMfwvExXDzlJny4DdDPiWH7NBcoIGWHhY7YUq1hBNJUDO8EPqlsXNbI2sj8ICvNGMf27njG8EGJCPXtMm41ECdVywnVJLK9tyrBjNxjhT9EckNup4BdCl68rxGEiSEwDzxCOnOE_sgRNcEAccCkSpAZAc9SlpsXTDvKMHvaU=)][[2](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AZnLMfzpxE7eSu5E1Mi72RoD7mhWXjJFvX66hjh0jiz6AuCAxKudzvAueWkoaZa37FILy6pFdUDIjY8KVGwUqPZe21HIYI2S0Mf6g1MHYYxC0gyKx1qSXzwqaQZyAT7o_VQnqTbZdrR2D1A=)]
+            
+                            // Call Gemini API before download (optional)
+                            callGeminiAPI(fileContent, 'beforeDownload', function(beforeData) {
+                                if (beforeData && !beforeData.error) {
+                                    displayResults(beforeData, 'gemini-results');
+                                    // Create a temporary link to download after API call:
+                                    const link = document.createElement('a');
+                                    link.href = URL.createObjectURL(new Blob([fileContent])); // Create a blob URL
+                                    link.download = downloadLink.download; // Set the filename
+                                    link.style.display = 'none';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    URL.revokeObjectURL(link.href); // Release the blob URL
+                                    body.removeChild(link);
+            
+                                    // Call Gemini API after download (optional)
+                                    callGeminiAPI(fileContent, 'afterDownload'); 
+                                } else {
+                                    displayResults(beforeData, 'gemini-results'); // Display error
+                                }
+            
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error downloading or processing file:', error);
+                            displayResults({ error: error.message }, 'gemini-results');
+            
+                        });
+            
+            
+                });
+            
+            
+                function callGeminiAPI(text, resultElementId, callback = null) { // callback is optional
+            
+                    // ... (Implementation same as in the previous example for register.html)
+            
+                    // Example API URL construction (replace with your Gemini API endpoints)
+                    let url = `/gemini_api/${feature}`; // Construct appropriate API URL based on the feature
+                    if (feature === 'beforeDownload'){
+                         url = `/gemini_api/sentiment`; // Example endpoint
+                    } else if (feature === 'afterDownload'){
+                        url = `/gemini_api/ner`; // Example endpoint
+                    }
+            
+                    // ... (Rest of the fetch logic - same as in the register.html example)
+            
+                }
+            
+            
+                function displayResults(data, elementId) {
+                    // ... (Implementation same as in the register.html example)
+                }
+            }
+            
+            
+            
+            
+            
+            // Call the setup function to attach event listeners and handle API calls
+            setupGeminiIntegration();
+            
+        
+        </script>
+
+
+    </div>
+</body>
+</html>

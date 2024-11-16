@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register - Gemini File Maestro</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Register</h1>
+        <form method="POST" action="{{ url_for('register') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.username.label }}
+                {{ form.username(class="form-control") }}
+                {% for error in form.username.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.email.label }}
+                {{ form.email(class="form-control") }}
+                {% for error in form.email.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.password.label }}
+                {{ form.password(class="form-control") }}
+                {% for error in form.password.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.confirm_password.label }}
+                {{ form.confirm_password(class="form-control") }}
+                {% for error in form.confirm_password.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+<script>
+    document.getElementById('username').addEventListener('input', function() {
+        const username = this.value;
+        callGeminiAPI(username, 'usernameFeedback'); // Call for real-time feedback
+    });
+    
+    
+    document.getElementById('email').addEventListener('input', function() {
+        const email = this.value;
+        callGeminiAPI(email, 'emailFeedback'); // Call for real-time feedback
+    });
+    
+    
+    
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+    
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        // ... other form fields
+    
+        callGeminiAPI(username, 'usernameAnalysis', function(usernameResults) {
+            if (usernameResults && !usernameResults.error) { // Check for successful API call
+                callGeminiAPI(email, 'emailAnalysis', function(emailResults) {
+                    if(emailResults && !emailResults.error){
+                        // Proceed with form submission if API calls are successful
+                        this.submit();
+                    } else {
+                        displayResults(emailResults, 'emailFeedback');
+                    }
+                }.bind(this)); // Use .bind(this) to keep the correct 'this' context
+                } else {
+                    displayResults(usernameResults, 'usernameFeedback'); // Display username analysis results
+                }
+        }.bind(this)); // Use .bind(this) for correct 'this' context
+    });
+    
+    
+    
+    
+    function callGeminiAPI(text, resultElementId, callback = null) {  // callback is optional
+        let url = `/gemini_api/${feature}`; // Construct appropriate API URL based on the feature
+    
+        if (feature === 'usernameAnalysis' || feature === 'usernameFeedback') {
+            url = `/gemini_api/username_sentiment`;
+        } else if (feature === 'emailAnalysis' || feature === 'emailFeedback') {
+            url = `/gemini_api/email_validation` // Example endpoint - update as per your API
+        }
+    
+    
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text: text })
+        })
+        .then(response => response.json())
+        .then(data => {
+            displayResults(data, resultElementId); // Display results in the specified element
+    
+    
+            if (callback) {  // Call the callback function if provided
+                callback(data);
+            }
+        })
+        .catch(error => {
+            console.error('Gemini API Error:', error);
+    
+            displayResults({ error: error.message }, resultElementId);  // Display error in the results div
+    
+        });
+    }
+    
+    
+    
+    
+    function displayResults(data, elementId) {
+        const resultsDiv = document.getElementById(elementId);
+    
+    
+        if (data.error) {  // Handle errors gracefully
+            resultsDiv.innerHTML = `<p class="text-danger">Error: ${data.error}</p>`;
+        } else {
+    
+            resultsDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`; // Format JSON nicely
+    
+        }
+    }
+</script>
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+    </div>
+</body>
+</html>

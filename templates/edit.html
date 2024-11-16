@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit File - Gemini File Maestro</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://codemirror.net/lib/codemirror.css">
+    <link rel="stylesheet" href="https://codemirror.net/theme/monokai.css">  
+    <link rel="stylesheet" href="{{ url_for('static', filename='edit.css') }}">
+
+
+    <style>
+<body>
+    <div class="container">
+        <h1>Edit File: {{ file.name }}</h1>
+
+
+        <form method="POST" action="{{ url_for('edit', file_id=file.id) }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.content.label }}
+                <textarea id="code-editor" name="content">{{ form.content.data }}</textarea> <!-- Text area for CodeMirror -->
+                {% for error in form.content.errors %}
+                    <span style="color: red;">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+
+
+        </form>
+
+<style>
+        /* Add styles for Gemini results and feedback */
+        #gemini-results {
+            margin-top: 1rem;
+            border: 1px solid #ccc;
+            padding: 1rem;
+            background-color: #f0f0f5;
+            overflow: auto; /* Add scrollbars for long content */
+         }
+
+        #gemini-results pre {
+            white-space: pre-wrap; /* Allow line wrapping for JSON display */
+
+        }
+
+        #gemini-feedback { /* Style for real-time feedback messages */
+            margin-top: 0.5rem;
+        }
+
+        .text-danger { /* Style for error messages */
+            color: #dc3545;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Edit File: {{ file.name }}</h1>
+
+        <form method="post" action="{{ url_for('edit', file_id=file.id) }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.content.label }}
+                <textarea id="code-editor" name="content">{{ form.content.data }}</textarea>
+                {% for error in form.content.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+
+        <!-- Gemini API Features -->
+        <div>
+            <button onclick="runGemini('sentiment')">Sentiment Analysis</button>
+            <button onclick="runGemini('grammar')">Grammar Check</button>
+            <button onclick="runGemini('summarization')">Summarization</button>
+            <button onclick="runGemini('ner')">Named Entity Recognition</button>
+            <button onclick="runGemini('creative_generation', 'poem')">Generate Poem</button>
+            <!-- Add other Gemini features here -->
+        </div>
+
+        <!-- Gemini Results and Feedback -->
+        <div id="gemini-results"></div>
+        <div id="gemini-feedback"></div>  <!-- For real-time feedback -->
+
+
+        <script src="https://codemirror.net/lib/codemirror.js"></script>
+        <script src="https://codemirror.net/mode/python/python.js"></script>
+        <!-- Include other modes as needed -->
+
+
+
+        <script>
+            // Initialize CodeMirror
+            var editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
+                lineNumbers: true,
+                theme: "monokai",
+                mode: "python",  // Set appropriate mode
+                extraKeys: {  // Example for real-time grammar check (optional)
+                    "Ctrl-Space": function(cm) {
+                        callGeminiAPI(cm.getValue(), 'grammar', displayFeedback); // Call Gemini API with editor content
+                    }
+                }
+            });
+
+
+            editor.on("change", function(cm) { // Real-time API calls on content change (e.g., for grammar)
+                callGeminiAPI(cm.getValue(), 'grammar', displayFeedback);
+            });
+
+
+
+
+            function callGeminiAPI(text, feature, feedbackCallback = null, resultsCallback = displayResults) {
+                let url = `/gemini_api/{{ file.id }}/${feature}`;
+
+                if (feature === 'creative_generation') {
+                    url += `?type=${creativeType}`; // Append type for creative generation
+                }
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: text })
+                })
+                .then(response => response.json())
+                .then(data => {
+
+                    if (feedbackCallback) {
+                        feedbackCallback(data); // For real-time feedback, if any
+                    }
+
+                    if (resultsCallback) {  // Call results callback function
+                        resultsCallback(data); // Display the results
+                    }
+
+                })
+                .catch(error => {
+                    console.error('Gemini API Error:', error);
+                    displayResults({ error: error.message }); // Display error message
+
+                    if (feedbackCallback) {
+                        feedbackCallback({ error: error.message }); // Display error feedback
+                    }
+                });
+            }
+
+            function displayResults(data) {
+                // ... (Implementation same as before - displays results in #gemini-results)
+            }
+
+
+            function displayFeedback(data) { // Function to display feedback from Gemini (e.g., grammar)
+                const feedbackDiv = document.getElementById('gemini-feedback');
+                if (data.error) {
+                    feedbackDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
+                } else {
+                    feedbackDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`; // Display feedback JSON (or process as needed)
+                }
+            }
+
+
+            function runGemini(feature, creativeType = null) {
+                callGeminiAPI(editor.getValue(), feature, null, displayResults); // Pass editor content, feature, and displayResults as callback
+            }
+
+
+
+        </script>
+
+
+
+    </div>
+</body>
+</html>

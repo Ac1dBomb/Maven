@@ -1,0 +1,627 @@
+/* CSS Reset (Meyer Reset as an example) */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* End of CSS Reset */
+/* style.css */
+
+/* Import normalize.css for cross-browser consistency */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css');
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --background-color: #1e1e1e;
+    --text-color: #e0e0e0;
+    --accent-color: #ff6347;
+    --shadow-color: rgba(0, 0, 0, 0.8);
+    --neon-color: #00ffff;  /* Neon color */
+    --glass-opacity: 0.2;
+    --border-radius: 5px;
+    --max-width: 1200px;
+    --spacing-small: 0.5rem;
+    --spacing-medium: 1rem;
+    --spacing-large: 2rem;
+    /* Font sizes using rem */
+    --font-size-base: 1rem; 
+    --font-size-large: 1.25rem;
+    --font-size-small: 0.875rem;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Roboto', sans-serif; /* Modern font */
+    line-height: 1.6;
+    margin: 0;
+    font-size: 16px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Subtle text shadow */
+    overflow-x: hidden; /* Prevent horizontal scroll on neon text */
+    font-smooth: antialiased;  /* Improves text rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+/* Layout - Using CSS Grid */
+.container {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column by default */
+    gap: 20px; /* Spacing between grid items */
+    /* Responsive adjustments using media queries */
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr); /* Two columns on larger screens */
+    }
+
+
+    @media (min-width: 1200px) {
+        grid-template-columns: repeat(3, 1fr); /* Three columns on extra large screens */
+
+    }
+
+
+}
+
+/* Typography */
+h1, h2, h3 {
+    font-weight: 700;
+    color: var(--primary-color);
+    text-transform: uppercase; /* Optional: Uppercase headings */
+    letter-spacing: 1px; /* Subtle letter spacing */
+
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: lighten(var(--accent-color), 10%);
+    text-decoration: underline;
+}
+
+
+/* Lists */
+ul, ol {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+
+/* Code Blocks */
+code {
+    background-color: #2d2d2d; /* Slightly darker background for code */
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+
+pre {
+    background-color: #2d2d2d;
+    padding: 10px;
+    border-radius: 5px;
+    overflow: auto;
+}
+
+
+pre code {
+    padding: 0;
+    font-size: inherit;
+}
+
+
+
+
+/* Modern Design Elements */
+
+
+
+.neon-text {
+    color: var(--neon-color);  /* Use your neon color variable */
+    text-shadow: 0 0 5px var(--neon-color), /* Multiple shadows for glow */
+                 0 0 10px var(--neon-color),
+                 0 0 20px var(--neon-color);
+    animation: neonFlicker 1s alternate infinite; /* Optional flicker animation */
+}
+
+
+
+@keyframes neonFlicker {
+    0% { opacity: 1; }
+    100% { opacity: 0.8; }
+}
+
+
+
+
+
+.glowing-border {
+    border: 2px solid var(--neon-color);
+    box-shadow: 0 0 10px var(--neon-color); /* Outer glow effect */
+    padding: 10px; /* Add some padding to make the glow visible */
+
+
+}
+
+
+
+
+
+
+.holographic-text {
+
+    background: linear-gradient(45deg, #ff00cc, #3333ff); /* Example gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 400% 400%;
+    animation: holographicShift 10s ease infinite;
+
+}
+
+
+
+
+
+
+@keyframes holographicShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+
+}
+
+
+
+
+.gradient-background {
+
+
+    background: linear-gradient(135deg, #f06, #9f0); /* Customize gradient angle and colors */
+
+}
+
+
+
+/* Button Component */
+.button {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    text-decoration: none; /* Remove underline from button links */
+    display: inline-block; /* Make buttons inline-block elements */
+}
+
+.button:hover {
+    background-color: darken(var(--primary-color), 10%);
+}
+
+.button--secondary {  /* Example variant */
+    background-color: var(--secondary-color);
+}
+
+
+
+
+
+button:hover, input[type="submit"]:hover {
+
+    background-color: darken(var(--primary-color), 10%); /* Darken primary color */
+
+}
+
+
+button:disabled,
+input[type="submit"]:disabled {
+    background-color: var(--secondary-color);
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+}
+
+/* Form Component */
+.form-container {  /* Outer container for spacing and alignment */
+    display: flex;
+    justify-content: center; /* Center the form horizontally */
+    align-items: center;    /* Center the form vertically */
+    min-height: calc(100vh - 2 * var(--spacing-large)); /* Fill available height, minus padding  */
+    padding: var(--spacing-large);
+
+}
+
+.form {
+    background: rgba(255, 255, 255, 0.1);  /* Subtle background or glassmorphism */
+    border-radius: var(--border-radius);
+    padding: var(--spacing-medium);
+    box-shadow: 0 4px 15px var(--shadow-color);
+    max-width: 500px;  /* Set a reasonable max-width */
+    width: 100%;  /* Occupy full width within container */
+}
+
+
+.form-group { /* Group labels and inputs */
+    margin-bottom: var(--spacing-medium);
+}
+
+.form label {
+    display: block;  /* Labels on their own line */
+    margin-bottom: var(--spacing-small);
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.form input[type="text"],
+.form input[type="password"],
+.form input[type="email"],
+.form textarea,
+.form select {
+    width: calc(100% - 2 * var(--spacing-small));  /* Account for padding */
+    padding: var(--spacing-small);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--border-radius);
+    background-color: rgba(0, 0, 0, 0.1);
+    color: var(--text-color);
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    font-size: var(--font-size-base); /* Consistent font size */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Add smooth transitions */
+
+
+}
+
+
+
+.form input[type="text"]:focus,
+.form input[type="password"]:focus,
+.form input[type="email"]:focus,
+.form textarea:focus,
+
+.form select:focus {  /* Focus styles */
+
+    outline: none; /* Remove default outline */
+    border-color: var(--primary-color); /* Change border color */
+
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle glow or shadow */
+}
+
+.form input::placeholder, /* Placeholder text styles */
+.form textarea::placeholder {
+    color: rgba(var(--text-color-rgb), 0.6);
+}
+
+
+
+.form-group--error input, /* Style inputs with errors */
+.form-group--error textarea
+.form-group--error select {
+    border-color: var(--error-color); /* E.g., red */
+
+}
+
+
+.form .error-message { /* Display error messages */
+    color: var(--error-color);
+    font-size: var(--font-size-small);
+    margin-top: var(--spacing-small);
+}
+
+.form button[type="submit"] {
+    /* ... button styles ... */
+    width: 100%; /* Make submit button full width */
+    padding: var(--spacing-small) var(--spacing-medium);
+
+
+}
+
+/* Modals */
+.modal {
+
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent backdrop */
+
+
+}
+
+
+.modal-content {
+    background-color: var(--background-color);
+    margin: 10% auto; /* Center the modal */
+    padding: 20px;
+
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+    max-width: 600px; /* Set a max-width for the modal content */
+
+
+
+}
+/* Component Styles: Navigation */
+.nav {
+    background-color: rgba(0, 0, 0, 0.7);  /* Semi-transparent dark background */
+    padding: 10px 0;
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(5px); /* Subtle blur for glassmorphism effect */
+    -webkit-backdrop-filter: blur(5px);
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+
+.nav ul {
+    list-style: none; /* Remove default list styling */
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    justify-content: space-around; /* Distribute navigation items evenly */
+}
+
+
+.nav li {
+
+
+    margin: 0 15px;
+
+
+}
+
+
+.nav a {
+    /* ... (link styles, but consider removing underline) */
+
+
+    font-weight: 500;
+
+    padding: 8px 12px; /* Add padding to links */
+    border-radius: 3px; /* Rounded corners for links */
+
+    transition: background-color 0.2s ease, color 0.2s ease; /* Add background transition on hover */
+
+}
+
+
+
+.nav a:hover {
+
+
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--primary-color);
+    /* Consider removing text-decoration: underline; here */
+
+}
+
+/* Table Component */
+.table-container { /* Wrapper for responsiveness */
+    overflow-x: auto; /* Horizontal scrolling if table is too wide */
+    margin-bottom: var(--spacing-large); /* Spacing below the table */
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0; /* Reset default spacing */
+    font-size: var(--font-size-base); /* Consistent font size */
+}
+
+
+.table th, .table td {
+    padding: var(--spacing-small) var(--spacing-medium); /* Consistent padding */
+    border: 1px solid var(--secondary-color); /* Use secondary color for borders */
+    text-align: left; /* Default text alignment */
+    vertical-align: middle; /* Vertically center cell content */
+}
+
+.table th {
+    background-color: var(--secondary-color); /* Darker header background */
+    color: var(--text-color); /* Light text color for contrast */
+    font-weight: 600; /* Bold header text */
+}
+
+
+
+/* Optional: Add zebra striping */
+.table tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05); /* Subtle background */
+}
+
+
+
+/* Optional: Hover effect on rows */
+.table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* More pronounced hover effect */
+
+}
+
+/* Optional: Responsive table for smaller screens*/
+@media (max-width: 768px) {
+    .table-container {
+        font-size: var(--font-size-small); /* Slightly reduce font size */
+
+    }
+
+    .table th, .table td {
+
+        padding: var(--spacing-small); /* Reduce padding */
+
+    }
+
+
+
+}
+
+
+
+
+/* Error Messages */
+.error-message {
+
+    color: #dc3545; /* Red error color */
+    margin-top: 10px;
+    display: none; /* Initially hidden */
+
+
+}
+
+
+
+/* Utility Classes */
+.text-center {
+
+    text-align: center;
+}
+
+.mt-2 {
+    margin-top: .5rem!important;
+}
+
+
+
+/* Advanced Creative Technique Examples */
+.element-with-clip-path {
+    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+    /* Customize the polygon points to create different shapes */
+
+}
+
+
+
+.element-with-glassmorphism {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+
+.element-with-gradient-animation {
+    background: linear-gradient(to right, #ff0000, #ffff00, #00ff00, #0000ff, #ff00ff, #ff0000);
+    background-size: 600% 100%; /* Adjust size for animation speed */
+
+    animation: gradientAnimation 10s linear infinite;
+
+    -webkit-background-clip: text; /* For gradient text effect */
+    -webkit-text-fill-color: transparent; 
+
+    /* Ensure solid background color if gradient text isn't supported */
+    background-color: var(--primary-color); 
+}
+
+
+
+@keyframes gradientAnimation {
+
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+
+
+}
+/* Card - Reusable Component Style */
+
+.card {
+
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+
+}
+
+
+
+/* Add more component styles as needed (e.g., navigation, modals, etc.) */
+
+
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    /* ... (Previous responsive styles) */
+    .nav ul {
+        flex-direction: column; /* Stack navigation items vertically */
+
+        align-items: center; /* Center vertically */
+
+
+
+    }
+
+
+    .nav li {
+
+        margin: 10px 0; /* Adjust margins */
+
+    }
+
+
+}
